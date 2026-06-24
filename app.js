@@ -349,14 +349,26 @@
     setTimeout(() => {
       removeTypingIndicator();
       const response = findAnswer(text);
-      addBotMessage(response.answer, response.source, true, response.type);
+      const showFeedback = response.type !== 'conversational';
+      addBotMessage(response.answer, response.source, showFeedback, response.type);
     }, delay);
   }
 
   // === NLP Matching Engine ===
   function findAnswer(query) {
     const normalizedQuery = query.toLowerCase().replace(/[?!.,'"]/g, '');
-    let expandedQuery = expandSynonyms(normalizedQuery);
+
+    // Check for conversational intent before FAQ matching
+    const conversational = matchConversational(normalizedQuery);
+    if (conversational) {
+      return { answer: conversational, source: null, type: 'conversational' };
+    }
+
+    // Strip greeting prefixes from longer messages so FAQ matching still works
+    // e.g. "hi what's the wifi password" → "what's the wifi password"
+    const strippedQuery = stripGreetingPrefix(normalizedQuery);
+
+    let expandedQuery = expandSynonyms(strippedQuery);
     const queryWords = expandedQuery.split(/\s+/);
 
     let bestMatch = null;
@@ -392,6 +404,37 @@
       if (expanded.includes(phrase)) expanded += ' ' + replacement;
     }
     return expanded;
+  }
+
+  function matchConversational(query) {
+    if (!KNOWLEDGE_BASE.conversational) return null;
+
+    const trimmed = query.trim();
+    const words = trimmed.split(/\s+/);
+
+    // Only match conversational patterns if the message is short (≤4 words)
+    // This avoids catching "hi what's the wifi password" as just a greeting
+    if (words.length > 4) return null;
+
+    for (const entry of KNOWLEDGE_BASE.conversational) {
+      for (const pattern of entry.patterns) {
+        if (trimmed === pattern) {
+          const responses = entry.responses;
+          return responses[Math.floor(Math.random() * responses.length)];
+        }
+      }
+    }
+
+    return null;
+  }
+
+  function stripGreetingPrefix(query) {
+    const greetings = ["hi", "hello", "hey", "hiya", "howdy", "yo", "heya"];
+    const words = query.trim().split(/\s+/);
+    if (words.length > 1 && greetings.includes(words[0])) {
+      return words.slice(1).join(' ');
+    }
+    return query;
   }
 
   function calculateRelevance(query, queryWords, faq) {

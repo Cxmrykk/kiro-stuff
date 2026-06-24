@@ -596,6 +596,88 @@ KNOWLEDGE_BASE.synonyms = {
   "two weeks": "resignation"
 };
 
+// === Conversational Patterns (non-FAQ social/intent responses) ===
+KNOWLEDGE_BASE.conversational = [
+  {
+    id: "greeting",
+    patterns: ["hi", "hello", "hey", "hiya", "howdy", "yo", "sup", "good morning", "good afternoon", "good evening", "morning", "afternoon", "g'day", "hallo", "heya", "whats up", "wassup"],
+    responses: [
+      "Hiii~ 🎀✨ Welcome! I'm DeskKitty, your onboarding buddy! Ask me anything about Wi-Fi, leave, expenses, IT support, or the employee handbook. What can I help with?",
+      "Hey there! 💕 So happy to see you~ I'm here to help with any workplace questions — policies, contacts, how things work around here. What's on your mind?",
+      "Hello hello~ 🌸 Ready to help! I know all about our office — from parking to pay day. Just ask away!"
+    ]
+  },
+  {
+    id: "gratitude",
+    patterns: ["thanks", "thank you", "thank u", "thx", "ty", "cheers", "ta", "appreciated", "much appreciated", "thanks a lot", "thanks so much", "thankss"],
+    responses: [
+      "You're welcome! 💕 Happy to help~ Let me know if anything else comes up!",
+      "Anytime! 🌸 That's what I'm here for. Don't hesitate to ask more questions~",
+      "No problem at all! ✨ Hope that was helpful. I'm always here if you need me!"
+    ]
+  },
+  {
+    id: "farewell",
+    patterns: ["bye", "goodbye", "see ya", "see you", "later", "cya", "gotta go", "im off", "heading out", "talk later", "ttyl"],
+    responses: [
+      "Bye bye! 🎀 Have an amazing day~ Come back anytime you have questions!",
+      "See you later! 💕 Hope your day goes great. I'll be here whenever you need me~",
+      "Take care! 🌸 Don't forget — I'm always just a message away. Bye~!"
+    ]
+  },
+  {
+    id: "how-are-you",
+    patterns: ["how are you", "how r u", "hows it going", "how you doing", "you okay", "you good", "whats good"],
+    responses: [
+      "I'm doing great, thanks for asking! 🎀✨ Always happy when I get to help someone. What can I do for you today?",
+      "Feeling super pawsitive~ 🐱💕 Ready to answer all your onboarding questions! What do you need help with?",
+      "I'm purrfect! ✨ Thanks for checking in. Got any questions about the workplace I can help with?"
+    ]
+  },
+  {
+    id: "identity",
+    patterns: ["who are you", "what are you", "what can you do", "what do you do", "whats your name", "your name", "tell me about yourself"],
+    responses: [
+      "I'm **DeskKitty** 🐱✨ — your AI onboarding assistant! I can answer questions about Wi-Fi, leave policies, expenses, IT support, meeting rooms, company culture, and pretty much anything in the employee handbook. Just ask!",
+      "I'm DeskKitty! 🎀 Think of me as your friendly FAQ buddy. I know all about company policies, who to contact for what, and how things work around here. Try asking me something~"
+    ]
+  },
+  {
+    id: "compliment",
+    patterns: ["youre cute", "you're cute", "youre cool", "you're cool", "i like you", "youre great", "you're great", "good job", "nice", "awesome", "cool"],
+    responses: [
+      "Aww, you're making me blush! 🎀💕 Thanks so much~ Now, anything I can help you with?",
+      "That's so sweet! ✨🐱 You're pretty great yourself. Let me know if I can help with anything!"
+    ]
+  },
+  {
+    id: "help",
+    patterns: ["help", "help me", "i need help", "can you help", "what should i ask", "what can i ask", "im lost", "im confused", "not sure what to ask"],
+    responses: [
+      "Of course! 💕 Here are some things I can help with:\n\n• **Wi-Fi & IT** — passwords, tech support, software\n• **Leave & HR** — time off, policies, dress code\n• **Money** — expenses, pay day, benefits\n• **Office** — parking, meeting rooms, kitchen\n• **People** — who to contact, your buddy, your manager\n\nJust ask in your own words and I'll do my best!",
+      "I've got you! 🌸 Try asking things like:\n• \"What's the Wi-Fi password?\"\n• \"How do I book a meeting room?\"\n• \"When do I get paid?\"\n• \"Who do I contact for IT help?\"\n\nOr just type what's on your mind — I'll figure it out~"
+    ]
+  },
+  {
+    id: "affirmative",
+    patterns: ["yes", "yep", "yeah", "yea", "sure", "ok", "okay", "alright", "right", "got it", "understood", "makes sense", "i see"],
+    responses: [
+      "Great! 🌸 Let me know if there's anything else I can help with~",
+      "Awesome! ✨ I'm here if you have more questions. Just ask away!",
+      "Perfect~ 💕 Anything else on your mind?"
+    ]
+  },
+  {
+    id: "negative",
+    patterns: ["no", "nope", "nah", "not really", "im good", "im fine", "nothing", "thats all", "all good", "no thanks", "no thank you"],
+    responses: [
+      "No worries! 🎀 I'll be right here if you think of something later. Have a great day~",
+      "All good! 💕 Come back anytime you have a question. Enjoy your day!",
+      "Okay! ✨ Remember, I'm always just a message away. Take care~"
+    ]
+  }
+];
+
 // === Demo Mode Scripted Conversations ===
 KNOWLEDGE_BASE.demoScripts = [
   {
