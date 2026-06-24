@@ -1,0 +1,361 @@
+/**
+ * 🎀 Hello Kitty Material Theme for DeskMate 🎀
+ * Soft gradients, rounded shapes, kawaii pink palette.
+ *
+ * To enable:  Add <link rel="stylesheet" href="theme-hellokitty.css"> AFTER styles.css
+ * To disable: Remove that <link> tag
+ */
+
+@import url('https://fonts.googleapis.com/css2?family=Quicksand:wght@400;500;600;700&display=swap');
+
+:root {
+  --primary: #ff4d6d;
+  --primary-light: #ff85a1;
+  --primary-dark: #c9184a;
+  --bg: #fff0f3;
+  --surface: #ffffff;
+  --text: #5c1a3b;
+  --text-muted: #b5658a;
+  --border: #ffccd5;
+  --bot-bubble: #fff0f5;
+  --user-bubble: #ff4d6d;
+  --user-text: #ffffff;
+  --success: #ff85a1;
+  --warning: #ffb3c6;
+  --danger: #c9184a;
+  --shadow-sm: 0 2px 4px rgba(255, 77, 109, 0.1);
+  --shadow-md: 0 4px 12px rgba(255, 77, 109, 0.15);
+  --shadow-lg: 0 10px 30px rgba(255, 77, 109, 0.12);
+  --radius: 1.5rem;
+  --radius-sm: 1rem;
+  --font: 'Quicksand', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  --kitty-pink: #ff6b8a;
+  --kitty-light-pink: #ffd6e0;
+  --kitty-bow-red: #e31c3d;
+}
+
+body, input, button {
+  font-family: var(--font) !important;
+}
+
+/* ===== App container ===== */
+#app {
+  background: var(--bg);
+  position: relative;
+  overflow: hidden;
+}
+
+#app::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background-image:
+    radial-gradient(circle at 10% 20%, rgba(255, 77, 109, 0.04) 0%, transparent 40%),
+    radial-gradient(circle at 90% 80%, rgba(255, 133, 161, 0.04) 0%, transparent 40%);
+  pointer-events: none;
+  z-index: 0;
+}
+
+/* ===== Header ===== */
+.chat-header {
+  background: linear-gradient(135deg, #ff4d6d 0%, #ff85a1 50%, #ffb3c6 100%);
+  position: relative;
+  padding: 1rem 1.25rem;
+  border-bottom: 3px solid var(--kitty-bow-red);
+}
+
+.chat-header::before {
+  content: "🎀";
+  position: absolute;
+  left: 50%;
+  top: -2px;
+  transform: translateX(-50%);
+  font-size: 1.2rem;
+  z-index: 10;
+}
+
+.chat-header::after {
+  content: "♡ ♡ ♡";
+  position: absolute;
+  right: 0.5rem;
+  bottom: 0.3rem;
+  font-size: 0.6rem;
+  opacity: 0.5;
+  letter-spacing: 2px;
+  color: white;
+}
+
+.header-avatar {
+  background: rgba(255, 255, 255, 0.35);
+  font-size: 1.5rem;
+  width: 44px;
+  height: 44px;
+  border: 2px solid rgba(255, 255, 255, 0.5);
+}
+
+.header-info h1 {
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+  letter-spacing: 0.5px;
+}
+
+.status-badge {
+  background: rgba(255, 255, 255, 0.3);
+  color: white;
+  border: 1px solid rgba(255, 255, 255, 0.4);
+  font-size: 0.65rem;
+  padding: 0.15rem 0.6rem;
+}
+
+/* ===== Chat messages area ===== */
+.chat-messages {
+  background-color: #fff8fa;
+  background-image:
+    url("data:image/svg+xml,%3Csvg width='60' height='60' xmlns='http://www.w3.org/2000/svg'%3E%3Ctext x='10' y='35' font-size='14' opacity='0.06'%3E♡%3C/text%3E%3C/svg%3E"),
+    url("data:image/svg+xml,%3Csvg width='80' height='80' xmlns='http://www.w3.org/2000/svg'%3E%3Ctext x='40' y='55' font-size='10' opacity='0.04'%3E🎀%3C/text%3E%3C/svg%3E");
+  position: relative;
+  z-index: 1;
+}
+
+/* ===== Bot bubbles ===== */
+.message--bot .message-bubble {
+  background: linear-gradient(135deg, #fff0f5, #ffe8ef);
+  border: 1.5px solid var(--kitty-light-pink);
+  border-bottom-left-radius: 0.4rem;
+  box-shadow: 0 2px 8px rgba(255, 107, 138, 0.08);
+  position: relative;
+}
+
+.message--bot .message-bubble::after {
+  content: "♡";
+  position: absolute;
+  bottom: -0.1rem;
+  right: 0.5rem;
+  font-size: 0.5rem;
+  color: var(--kitty-pink);
+  opacity: 0.4;
+  animation: heartFloat 3s ease-in-out infinite;
+}
+
+.message--bot .message-bubble::before {
+  content: "🐾";
+  position: absolute;
+  top: -8px;
+  left: 8px;
+  font-size: 0.55rem;
+  opacity: 0.35;
+}
+
+/* ===== User bubbles ===== */
+.message--user .message-bubble {
+  background: linear-gradient(135deg, #ff4d6d, #ff7096);
+  border-bottom-right-radius: 0.4rem;
+  box-shadow: 0 3px 10px rgba(255, 77, 109, 0.25);
+}
+
+/* ===== Bot avatar ===== */
+.message--bot .message-avatar {
+  background: white;
+  border: 2px solid var(--kitty-light-pink);
+  box-shadow: 0 2px 8px rgba(255, 107, 138, 0.2);
+  padding: 3px;
+  width: 36px;
+  height: 36px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  animation: gentlePulse 3s ease-in-out infinite;
+}
+
+/* ===== Source reference ===== */
+.message-source {
+  color: var(--kitty-pink);
+  opacity: 0.7;
+  font-size: 0.7rem;
+}
+
+/* ===== Feedback buttons ===== */
+.feedback-btn {
+  border-color: var(--kitty-light-pink);
+  border-radius: 999px;
+  padding: 0.2rem 0.6rem;
+}
+
+.feedback-btn:hover {
+  background: #ffe8ef;
+  border-color: var(--kitty-pink);
+}
+
+.feedback-btn.active-up {
+  border-color: var(--kitty-pink);
+  background: #ffe0ea;
+  color: var(--kitty-pink);
+}
+
+.feedback-btn.active-down {
+  border-color: var(--danger);
+  background: #fff0f3;
+  color: var(--danger);
+}
+
+/* ===== Typing indicator ===== */
+.typing-indicator {
+  background: linear-gradient(135deg, #fff0f5, #ffe8ef);
+  border: 1.5px solid var(--kitty-light-pink);
+}
+
+.typing-dot {
+  background: var(--kitty-pink);
+}
+
+/* ===== Quick questions ===== */
+.quick-questions {
+  background: #fff5f8;
+  border-top: 1px solid var(--kitty-light-pink);
+  border-bottom: 1px solid var(--kitty-light-pink);
+  padding: 0.6rem 1rem;
+}
+
+.quick-btn {
+  border-color: var(--kitty-light-pink);
+  background: white;
+  border-radius: 999px;
+  font-weight: 500;
+  box-shadow: 0 1px 3px rgba(255, 107, 138, 0.08);
+  transition: all 0.2s ease;
+}
+
+.quick-btn:hover {
+  border-color: var(--kitty-pink);
+  background: #ffe8ef;
+  color: var(--primary);
+  transform: translateY(-1px);
+  box-shadow: 0 3px 8px rgba(255, 107, 138, 0.15);
+}
+
+/* ===== Input area ===== */
+.chat-input-area {
+  background: #fff5f8;
+  border-top: 1.5px solid var(--kitty-light-pink);
+}
+
+.chat-input {
+  background: white;
+  border: 1.5px solid var(--kitty-light-pink);
+  border-radius: 999px;
+  font-weight: 500;
+}
+
+.chat-input::placeholder {
+  color: #d4839e;
+}
+
+.chat-input:focus {
+  border-color: var(--kitty-pink);
+  box-shadow: 0 0 0 3px rgba(255, 107, 138, 0.12), inset 0 0 0 1px rgba(255, 107, 138, 0.1);
+}
+
+.send-btn {
+  background: linear-gradient(135deg, #ff4d6d, #ff85a1);
+  box-shadow: 0 3px 10px rgba(255, 77, 109, 0.3);
+  width: 42px;
+  height: 42px;
+}
+
+.send-btn:hover {
+  background: linear-gradient(135deg, #e31c3d, #ff4d6d);
+  box-shadow: 0 4px 14px rgba(255, 77, 109, 0.4);
+  transform: scale(1.08);
+}
+
+/* ===== Header action buttons ===== */
+.demo-btn, .export-btn {
+  border-color: rgba(255, 255, 255, 0.5);
+  background: rgba(255, 255, 255, 0.2);
+  border-radius: 999px;
+  font-weight: 600;
+}
+
+.demo-btn:hover, .export-btn:hover {
+  background: rgba(255, 255, 255, 0.35);
+}
+
+.demo-btn--active {
+  background: rgba(255, 255, 255, 0.4);
+  border-color: white;
+  box-shadow: 0 0 10px rgba(255, 255, 255, 0.3);
+}
+
+/* ===== Toast ===== */
+.toast {
+  background: linear-gradient(135deg, #ff4d6d, #ff85a1);
+  color: white;
+  font-weight: 600;
+  border: 2px solid rgba(255, 255, 255, 0.3);
+  box-shadow: 0 6px 20px rgba(255, 77, 109, 0.3);
+}
+
+/* ===== Scrollbar ===== */
+.chat-messages::-webkit-scrollbar {
+  width: 5px;
+}
+
+.chat-messages::-webkit-scrollbar-track {
+  background: #fff5f8;
+}
+
+.chat-messages::-webkit-scrollbar-thumb {
+  background: var(--kitty-light-pink);
+  border-radius: 10px;
+}
+
+.chat-messages::-webkit-scrollbar-thumb:hover {
+  background: var(--kitty-pink);
+}
+
+/* ===== Code & bold ===== */
+.message-bubble code {
+  background: #ffe0ea;
+  color: var(--primary-dark);
+  padding: 0.15rem 0.4rem;
+  border-radius: 0.3rem;
+  font-size: 0.82rem;
+  font-weight: 600;
+  border: 1px solid var(--kitty-light-pink);
+}
+
+.message-bubble strong {
+  color: var(--primary-dark);
+}
+
+/* ===== Decorative app borders ===== */
+#app {
+  border-left: 3px solid var(--kitty-light-pink);
+  border-right: 3px solid var(--kitty-light-pink);
+}
+
+/* ===== Pink selection ===== */
+::selection {
+  background: #ffd6e0;
+  color: #c9184a;
+}
+
+/* ===== Animations ===== */
+@keyframes heartFloat {
+  0%, 100% { transform: translateY(0) scale(1); opacity: 0.4; }
+  50% { transform: translateY(-6px) scale(1.1); opacity: 0.8; }
+}
+
+@keyframes gentlePulse {
+  0%, 100% { box-shadow: 0 0 0 0 rgba(255, 77, 109, 0.1); }
+  50% { box-shadow: 0 0 0 6px rgba(255, 77, 109, 0); }
+}
+
+/* ===== Reduced motion ===== */
+@media (prefers-reduced-motion: reduce) {
+  .message--bot .message-avatar {
+    animation: none;
+  }
+  .message--bot .message-bubble::after {
+    animation: none;
+  }
+}

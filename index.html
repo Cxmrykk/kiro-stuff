@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+  <title>DeskKitty – Your Onboarding Assistant 🎀</title>
+  <link rel="stylesheet" href="styles.css" />
+  <!-- Hello Kitty theme: remove the next line to revert to default -->
+  <link rel="stylesheet" href="theme-hellokitty.css" />
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🤖</text></svg>" />
+</head>
+<body>
+  <div id="app">
+    <!-- Header -->
+    <header class="chat-header">
+      <div class="header-avatar">🐱</div>
+      <div class="header-info">
+        <h1 id="botName">DeskKitty</h1>
+        <span class="status-badge">Online</span>
+      </div>
+      <div class="header-actions">
+        <button class="demo-btn" id="demoBtn" aria-label="Run demo">▶ Demo</button>
+        <button class="export-btn" id="exportBtn" onclick="exportFeedback()" aria-label="Export feedback">📊</button>
+      </div>
+    </header>
+
+    <!-- Chat Messages -->
+    <main class="chat-messages" id="chatMessages" role="log" aria-live="polite" aria-label="Chat messages">
+    </main>
+
+    <!-- Quick Questions -->
+    <div class="quick-questions" id="quickQuestions">
+      <button class="quick-btn" data-question="What's the Wi-Fi password?">📶 Wi-Fi password</button>
+      <button class="quick-btn" data-question="How do I submit an expense report?">💰 Expenses</button>
+      <button class="quick-btn" data-question="What is the leave policy?">🏖️ Leave policy</button>
+      <button class="quick-btn" data-question="Who do I contact for IT support?">💻 IT support</button>
+      <button class="quick-btn" data-question="What should I do in my first week?">🌟 First week</button>
+      <button class="quick-btn" data-question="What benefits do I get?">🎁 Benefits</button>
+    </div>
+
+    <!-- Input Area -->
+    <footer class="chat-input-area">
+      <form id="chatForm" class="chat-form" aria-label="Send a message">
+        <input
+          type="text"
+          id="messageInput"
+          class="chat-input"
+          placeholder="Ask me anything about your new workplace~ 🌸"
+          autocomplete="off"
+          aria-label="Type your question"
+        />
+        <button type="submit" class="send-btn" aria-label="Send message">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <line x1="22" y1="2" x2="11" y2="13"></line>
+            <polygon points="22 2 15 22 11 13 2 9 22 2"></polygon>
+          </svg>
+        </button>
+      </form>
+    </footer>
+  </div>
+
+  <script src="knowledge-base.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>
