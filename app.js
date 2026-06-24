@@ -1,6 +1,6 @@
 /**
  * DeskKitty – AI FAQ Bot for New Employees
- * Main application logic: NLP matching with synonyms, conversation context,
+ * Main application logic: NLP matching, Audio & VFX Engine,
  * feedback persistence, demo mode, and chat UI.
  */
 
@@ -23,17 +23,182 @@
   let contextDecay = 0;
   let demoRunning = false;
   let demoAbort = false;
+  let audioInitialized = false;
 
-  // === Initialize ===
+  // === Kawaii Audio Engine (Web Audio API Synthesizer) ===
+  const AudioEngine = {
+    ctx: null,
+    muted: false, // Default is sound ON, but waits for interaction
+    init() {
+      if (!this.ctx) {
+        const AudioContext = window.AudioContext || window.webkitAudioContext;
+        if (AudioContext) this.ctx = new AudioContext();
+      }
+      if (this.ctx && this.ctx.state === 'suspended') {
+        this.ctx.resume();
+      }
+    },
+    playTone(freq, type, duration, vol = 0.1, slideFreq = null) {
+      if (this.muted || !this.ctx) return;
+      try {
+        const osc = this.ctx.createOscillator();
+        const gain = this.ctx.createGain();
+        
+        osc.type = type;
+        osc.frequency.setValueAtTime(freq, this.ctx.currentTime);
+        if (slideFreq) {
+          osc.frequency.exponentialRampToValueAtTime(slideFreq, this.ctx.currentTime + duration);
+        }
+        
+        gain.gain.setValueAtTime(vol, this.ctx.currentTime);
+        gain.gain.exponentialRampToValueAtTime(0.01, this.ctx.currentTime + duration);
+        
+        osc.connect(gain);
+        gain.connect(this.ctx.destination);
+        
+        osc.start();
+        osc.stop(this.ctx.currentTime + duration);
+      } catch (e) { console.warn("Audio failed", e); }
+    },
+    meow() {
+      if (this.muted || !this.ctx) return;
+      try {
+        const osc = this.ctx.createOscillator();
+        const gain = this.ctx.createGain();
+        const filter = this.ctx.createBiquadFilter();
+
+        osc.type = 'sawtooth';
+        osc.frequency.setValueAtTime(500, this.ctx.currentTime);
+        osc.frequency.linearRampToValueAtTime(800, this.ctx.currentTime + 0.1);
+        osc.frequency.exponentialRampToValueAtTime(300, this.ctx.currentTime + 0.4);
+
+        filter.type = 'bandpass';
+        filter.frequency.value = 1000;
+        filter.Q.value = 2;
+
+        gain.gain.setValueAtTime(0, this.ctx.currentTime);
+        gain.gain.linearRampToValueAtTime(0.1, this.ctx.currentTime + 0.1);
+        gain.gain.linearRampToValueAtTime(0, this.ctx.currentTime + 0.4);
+
+        osc.connect(filter);
+        filter.connect(gain);
+        gain.connect(this.ctx.destination);
+
+        osc.start();
+        osc.stop(this.ctx.currentTime + 0.4);
+      } catch(e) {}
+    },
+    pop() { this.playTone(600, 'sine', 0.1, 0.1, 300); },
+    tink() { this.playTone(1200, 'sine', 0.08, 0.05); },
+    bell() { 
+      this.playTone(1046.50, 'sine', 0.2, 0.05);
+      setTimeout(() => this.playTone(1318.51, 'sine', 0.3, 0.05), 80);
+    },
+    chime() {
+      [523.25, 659.25, 783.99, 1046.50].forEach((f, i) => {
+        setTimeout(() => this.playTone(f, 'sine', 0.4, 0.05), i * 60);
+      });
+    },
+    sad() { this.playTone(400, 'triangle', 0.5, 0.1, 200); }
+  };
+
+  // === Magic Visual Effects Engine ===
+  const VFX = {
+    layer: null,
+    init() {
+      this.layer = document.getElementById('vfx-layer');
+      if (!this.layer) return;
+      
+      // Spawn falling sakura petals slowly
+      setInterval(() => this.spawnPetal(), 1000);
+
+      // Global click sparkle bursts
+      document.addEventListener('click', (e) => {
+        // Prevent blocking input focus
+        if (e.target.tagName !== 'INPUT') {
+          this.spawnClickBurst(e.clientX, e.clientY);
+        }
+      });
+    },
+    spawnPetal() {
+      if (!this.layer || document.hidden) return;
+      const petal = document.createElement('div');
+      petal.className = 'hk-petal';
+      petal.style.left = Math.random() * 100 + 'vw';
+      const duration = 6 + Math.random() * 4;
+      petal.style.animationDuration = duration + 's';
+      this.layer.appendChild(petal);
+      setTimeout(() => petal.remove(), duration * 1000);
+    },
+    spawnClickBurst(x, y) {
+      if (!this.layer) return;
+      for (let i = 0; i < 4; i++) {
+        const sparkle = document.createElement('div');
+        sparkle.className = 'hk-particle hk-sparkle';
+        sparkle.style.left = x + 'px';
+        sparkle.style.top = y + 'px';
+        
+        const angle = Math.random() * Math.PI * 2;
+        const dist = 15 + Math.random() * 25;
+        sparkle.style.setProperty('--tx', Math.cos(angle) * dist + 'px');
+        sparkle.style.setProperty('--ty', Math.sin(angle) * dist + 'px');
+        
+        this.layer.appendChild(sparkle);
+        setTimeout(() => sparkle.remove(), 600);
+      }
+    },
+    spawnConfetti(target) {
+      if (!this.layer) return;
+      const rect = target.getBoundingClientRect();
+      const x = rect.left + rect.width / 2;
+      const y = rect.top + rect.height / 2;
+      const colors = ['#ff0033', '#ff6680', '#ffcc00', '#ffffff'];
+      
+      for (let i = 0; i < 15; i++) {
+        const conf = document.createElement('div');
+        conf.className = 'hk-particle hk-confetti';
+        conf.style.left = x + 'px';
+        conf.style.top = y + 'px';
+        conf.style.backgroundColor = colors[Math.floor(Math.random() * colors.length)];
+        
+        const angle = Math.random() * Math.PI * 2;
+        const dist = 30 + Math.random() * 60;
+        conf.style.setProperty('--tx', Math.cos(angle) * dist + 'px');
+        conf.style.setProperty('--ty', Math.sin(angle) * dist - 30 + 'px');
+        conf.style.setProperty('--rot', Math.random() * 360 + 'deg');
+        
+        this.layer.appendChild(conf);
+        setTimeout(() => conf.remove(), 800);
+      }
+    }
+  };
+
+  // === Initialize App ===
   function init() {
     addBotMessage(getGreeting(), null, false);
     chatForm.addEventListener('submit', handleSubmit);
     quickQuestions.addEventListener('click', handleQuickQuestion);
 
-    // Demo button
+    // Audio context requires user interaction to unlock
+    const ensureAudio = () => {
+      if (!audioInitialized) {
+        AudioEngine.init();
+        audioInitialized = true;
+        document.removeEventListener('click', ensureAudio);
+        document.removeEventListener('keydown', ensureAudio);
+      }
+    };
+    document.addEventListener('click', ensureAudio);
+    document.addEventListener('keydown', ensureAudio);
+
+    // Buttons
+    const soundBtn = document.getElementById('soundBtn');
+    if (soundBtn) soundBtn.addEventListener('click', toggleSound);
+    
     const demoBtn = document.getElementById('demoBtn');
     if (demoBtn) demoBtn.addEventListener('click', toggleDemo);
 
+    VFX.init();
     messageInput.focus();
   }
 
@@ -43,6 +208,22 @@
       "I know all about Wi-Fi, leave policies, expenses, IT support, " +
       "and everything in your employee handbook!\n\n" +
       "Ask me anything or tap a quick question below! Let's make your first day amazing~ 🌸✨";
+  }
+
+  function toggleSound(e) {
+    e.stopPropagation();
+    AudioEngine.init();
+    AudioEngine.muted = !AudioEngine.muted;
+    const soundBtn = document.getElementById('soundBtn');
+    if (AudioEngine.muted) {
+      soundBtn.textContent = '🔇';
+      soundBtn.classList.remove('header-btn--active');
+    } else {
+      soundBtn.textContent = '🔊';
+      soundBtn.classList.add('header-btn--active');
+      AudioEngine.meow();
+      setTimeout(() => AudioEngine.chime(), 400);
+    }
   }
 
   // === Event Handlers ===
@@ -57,12 +238,14 @@
   function handleQuickQuestion(e) {
     const btn = e.target.closest('.quick-btn');
     if (!btn) return;
+    AudioEngine.tink();
     const question = btn.dataset.question;
     sendMessage(question);
   }
 
   // === Core Chat Logic ===
   function sendMessage(text) {
+    AudioEngine.pop();
     addUserMessage(text);
     showTypingIndicator();
 
@@ -74,14 +257,10 @@
     }, delay);
   }
 
-  // === NLP Matching Engine with Synonyms & Context ===
+  // === NLP Matching Engine ===
   function findAnswer(query) {
     const normalizedQuery = query.toLowerCase().replace(/[?!.,'"]/g, '');
-    
-    // Expand synonyms
     let expandedQuery = expandSynonyms(normalizedQuery);
-    
-    // Add context boost: if last category is known, weight it
     const queryWords = expandedQuery.split(/\s+/);
 
     let bestMatch = null;
@@ -89,81 +268,54 @@
 
     for (const faq of KNOWLEDGE_BASE.faqs) {
       let score = calculateRelevance(expandedQuery, queryWords, faq);
-      
-      // Context boost: if this FAQ is same category as last answer
       if (lastMatchedCategory && faq.category === lastMatchedCategory && contextDecay < 3) {
         score += 1.5;
       }
-      
       if (score > bestScore) {
         bestScore = score;
         bestMatch = faq;
       }
     }
 
-    // Confidence threshold
     if (bestScore >= 2) {
       lastMatchedCategory = bestMatch.category;
       contextDecay = 0;
-      return {
-        answer: bestMatch.answer,
-        source: bestMatch.source
-      };
+      return { answer: bestMatch.answer, source: bestMatch.source };
     }
 
-    // No match — increment context decay
     contextDecay++;
-    if (contextDecay >= 3) {
-      lastMatchedCategory = null;
-    }
-
+    if (contextDecay >= 3) lastMatchedCategory = null;
     return getGracefulFallback(normalizedQuery);
   }
 
   function expandSynonyms(query) {
     if (!KNOWLEDGE_BASE.synonyms) return query;
-    
     let expanded = query;
     for (const [phrase, replacement] of Object.entries(KNOWLEDGE_BASE.synonyms)) {
-      if (expanded.includes(phrase)) {
-        expanded += ' ' + replacement;
-      }
+      if (expanded.includes(phrase)) expanded += ' ' + replacement;
     }
     return expanded;
   }
 
   function calculateRelevance(query, queryWords, faq) {
     let score = 0;
-
-    // Keyword matching (weighted heavily)
     for (const keyword of faq.keywords) {
-      if (query.includes(keyword)) {
-        score += 3;
-      }
+      if (query.includes(keyword)) score += 3;
       for (const word of queryWords) {
-        if (word.length > 3 && keyword.includes(word)) {
-          score += 1;
-        }
-        if (word.length > 2 && keyword.startsWith(word)) {
-          score += 0.5;
-        }
+        if (word.length > 3 && keyword.includes(word)) score += 1;
+        if (word.length > 2 && keyword.startsWith(word)) score += 0.5;
       }
     }
-
-    // Question text similarity
     const faqWords = faq.question.toLowerCase().split(/\s+/);
     for (const word of queryWords) {
-      if (word.length > 2 && faqWords.includes(word)) {
-        score += 1;
-      }
+      if (word.length > 2 && faqWords.includes(word)) score += 1;
     }
-
     return score;
   }
 
   function getGracefulFallback(query) {
     const categoryHints = {
-      "IT": ["computer", "software", "tech", "system", "login", "app", "device", "screen", "monitor"],
+      "IT": ["computer", "software", "tech", "system", "login", "app", "device", "screen"],
       "HR": ["contract", "hr", "hire", "team", "people", "human"],
       "Finance": ["money", "pay", "tax", "invoice", "bank", "financial"],
       "Facilities": ["building", "office", "room", "space", "clean", "maintenance"],
@@ -221,6 +373,8 @@
 
   function addBotMessage(text, source, showFeedback) {
     messageCount++;
+    if (showFeedback) setTimeout(() => AudioEngine.bell(), 150); // Play sound as it appears
+
     const msgId = 'msg-' + messageCount;
     const msgEl = document.createElement('div');
     msgEl.className = 'message message--bot';
@@ -253,6 +407,17 @@
       msgEl.querySelectorAll('.feedback-btn').forEach(btn => {
         btn.addEventListener('click', handleFeedback);
       });
+      
+      // Inject magical pop-in sparkles inside the bubble
+      const sparkles = document.createElement('div');
+      sparkles.className = 'bot-sparkle-container';
+      sparkles.innerHTML = `
+        <div class="bot-sparkle" style="left: 10px; animation-delay: 0s;"></div>
+        <div class="bot-sparkle" style="left: 40px; animation-delay: 0.2s; top: -5px;"></div>
+        <div class="bot-sparkle" style="left: 25px; animation-delay: 0.1s; top: 10px;"></div>
+      `;
+      msgEl.querySelector('.message-bubble').appendChild(sparkles);
+      setTimeout(() => sparkles.remove(), 1500);
     }
 
     chatMessages.appendChild(msgEl);
@@ -266,27 +431,29 @@
     const vote = btn.dataset.vote;
     const feedbackGroup = btn.parentElement;
 
-    // Remove previous active state
     feedbackGroup.querySelectorAll('.feedback-btn').forEach(b => {
       b.classList.remove('active-up', 'active-down');
       b.removeAttribute('aria-pressed');
     });
 
-    // Set active state
     btn.classList.add(vote === 'up' ? 'active-up' : 'active-down');
     btn.setAttribute('aria-pressed', 'true');
 
-    // Persist to localStorage
+    if (vote === 'up') {
+      AudioEngine.chime();
+      VFX.spawnConfetti(btn);
+    } else {
+      AudioEngine.sad();
+    }
+
     const feedbackLog = getFeedbackLog();
-    // Remove existing feedback for this message
     const existing = feedbackLog.findIndex(f => f.msgId === msgId);
     if (existing !== -1) feedbackLog.splice(existing, 1);
     
     feedbackLog.push({ msgId, vote, timestamp: new Date().toISOString() });
     localStorage.setItem('deskkitty_feedback', JSON.stringify(feedbackLog));
 
-    // Show toast
-    showToast(vote === 'up' ? 'Thanks for the feedback! 👍' : 'Sorry about that. We\'ll improve! 📝');
+    showToast(vote === 'up' ? 'Thanks for the feedback! ✨' : 'Sorry about that. We\'ll improve! 🌧️');
   }
 
   function getFeedbackLog() {
@@ -310,7 +477,6 @@
 
   // === Toast Notifications ===
   function showToast(message) {
-    // Remove existing toast
     const existing = document.querySelector('.toast');
     if (existing) existing.remove();
 
@@ -321,10 +487,8 @@
     toast.setAttribute('aria-live', 'polite');
     document.body.appendChild(toast);
 
-    // Animate in
     requestAnimationFrame(() => toast.classList.add('toast--visible'));
 
-    // Remove after 2.5s
     setTimeout(() => {
       toast.classList.remove('toast--visible');
       setTimeout(() => toast.remove(), 300);
@@ -339,7 +503,7 @@
       demoRunning = false;
       if (demoBtn) {
         demoBtn.textContent = '▶ Demo';
-        demoBtn.classList.remove('demo-btn--active');
+        demoBtn.classList.remove('header-btn--active');
       }
       return;
     }
@@ -354,10 +518,9 @@
     demoAbort = false;
     if (demoBtn) {
       demoBtn.textContent = '⏹ Stop';
-      demoBtn.classList.add('demo-btn--active');
+      demoBtn.classList.add('header-btn--active');
     }
 
-    // Clear chat
     chatMessages.innerHTML = '';
     messageCount = 0;
     lastMatchedCategory = null;
@@ -369,22 +532,19 @@
     for (const script of KNOWLEDGE_BASE.demoScripts) {
       if (demoAbort) break;
 
-      // Show label
       addBotMessage(`--- **${script.label}** ---`, null, false);
       await sleep(800);
       if (demoAbort) break;
 
-      // Simulate user typing
+      AudioEngine.pop();
       addUserMessage(script.question);
       await sleep(500);
       if (demoAbort) break;
 
-      // Show typing indicator
       showTypingIndicator();
       await sleep(1200);
       if (demoAbort) break;
 
-      // Get and show answer
       removeTypingIndicator();
       const response = findAnswer(script.question);
       addBotMessage(response.answer, response.source, true);
@@ -400,7 +560,7 @@
     demoAbort = false;
     if (demoBtn) {
       demoBtn.textContent = '▶ Demo';
-      demoBtn.classList.remove('demo-btn--active');
+      demoBtn.classList.remove('header-btn--active');
     }
   }
 

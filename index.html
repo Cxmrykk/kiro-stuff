@@ -10,6 +10,9 @@
   <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🤖</text></svg>" />
 </head>
 <body>
+  <!-- Container for floating petals and particle bursts -->
+  <div id="vfx-layer" aria-hidden="true"></div>
+
   <div id="app">
     <!-- Header -->
     <header class="chat-header">
@@ -19,8 +22,10 @@
         <span class="status-badge">Online</span>
       </div>
       <div class="header-actions">
-        <button class="demo-btn" id="demoBtn" aria-label="Run demo">▶ Demo</button>
-        <button class="export-btn" id="exportBtn" onclick="exportFeedback()" aria-label="Export feedback">📊</button>
+        <!-- Sound Toggle -->
+        <button class="header-btn" id="soundBtn" aria-label="Toggle sound">🔊</button>
+        <button class="header-btn" id="demoBtn" aria-label="Run demo">▶ Demo</button>
+        <button class="header-btn" id="exportBtn" onclick="exportFeedback()" aria-label="Export feedback">📊</button>
       </div>
     </header>
 

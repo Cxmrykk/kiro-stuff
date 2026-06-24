@@ -1,28 +1,25 @@
 /**
  * 🎀 Ultimate Hello Kitty Theme for DeskMate 🎀
- * SVGs, scalloped borders, polka dots, and kawaii animations!
- *
- * To enable:  Add <link rel="stylesheet" href="theme-hellokitty.css"> AFTER styles.css
- * To disable: Remove that <link> tag
+ * SVGs, scalloped borders, polka dots, kawaii animations, and VFX!
  */
 
 @import url('https://fonts.googleapis.com/css2?family=Quicksand:wght@500;600;700&display=swap');
 
 :root {
   /* Classic Sanrio Palette */
-  --primary: #ff0033;         /* Signature Bow Red */
+  --primary: #ff0033;
   --primary-light: #ff6680;
   --primary-dark: #cc0029;
-  --bg: #ffe6eb;              /* Very soft background pink */
-  --surface: #ffffff;         /* Kitty White */
-  --text: #4a3036;            /* Warm charcoal/brown for soft cartoon outlines */
+  --bg: #ffe6eb;
+  --surface: #ffffff;
+  --text: #4a3036;
   --text-muted: #9e7a84;
   --border: #ffccd5;
   --bot-bubble: #ffffff;
   --user-bubble: #ff0033;
   --user-text: #ffffff;
-  --success: #ff6680;         /* Soft red/pink */
-  --warning: #ffcc00;         /* Kitty Nose Yellow */
+  --success: #ff6680;
+  --warning: #ffcc00;
   --danger: #ff0033;
   
   --kitty-pink: #ffb3c6;
@@ -40,13 +37,12 @@
 
 body, input, button {
   font-family: var(--font) !important;
-  font-weight: 600; /* Bolder text for a bubbly look */
+  font-weight: 600;
 }
 
 /* ===== App Container (Polka Dot Background) ===== */
 #app {
   background-color: var(--kitty-light-pink);
-  /* Classic Polka Dot Pattern */
   background-image: 
     radial-gradient(var(--surface) 20%, transparent 21%),
     radial-gradient(var(--surface) 20%, transparent 21%);
@@ -68,12 +64,12 @@ body, input, button {
   position: relative;
   z-index: 20;
   padding-bottom: 1rem;
-  /* Header Polka Dots */
   background-image: 
     radial-gradient(rgba(255,255,255,0.25) 15%, transparent 16%),
     radial-gradient(rgba(255,255,255,0.25) 15%, transparent 16%);
   background-size: 16px 16px;
   background-position: 0 0, 8px 8px;
+  overflow: hidden; /* For shimmer effect */
 }
 
 /* Scalloped Awning Effect */
@@ -81,8 +77,7 @@ body, input, button {
   content: "";
   position: absolute;
   bottom: -10px;
-  left: 0; 
-  right: 0;
+  left: 0; right: 0;
   height: 10px;
   background: radial-gradient(circle at 10px 0, var(--primary) 10px, transparent 11px);
   background-size: 20px 10px;
@@ -90,10 +85,24 @@ body, input, button {
   filter: drop-shadow(0 3px 2px rgba(74, 48, 54, 0.15));
 }
 
+/* Shimmering Glint across the Awning */
+.chat-header::before {
+  content: "";
+  position: absolute;
+  top: 0; left: -150%;
+  width: 50%; height: 100%;
+  background: linear-gradient(to right, transparent, rgba(255,255,255,0.4), transparent);
+  transform: skewX(-20deg);
+  animation: shimmer 5s infinite;
+  z-index: 1;
+}
+
 .header-info h1 {
   font-weight: 700;
   letter-spacing: 0.5px;
   text-shadow: 2px 2px 0px rgba(74, 48, 54, 0.5);
+  position: relative;
+  z-index: 2;
 }
 
 .status-badge {
@@ -102,36 +111,61 @@ body, input, button {
   border: 2px solid var(--text);
   font-weight: 700;
   box-shadow: 1px 1px 0px var(--text);
+  position: relative;
+  z-index: 2;
 }
 
-/* ===== Replace Text Emojis with High-Quality Custom SVGs ===== */
+/* Header Buttons Override */
+.header-btn {
+  border: 2px solid var(--text);
+  background: var(--warning);
+  color: var(--text);
+  border-radius: 12px;
+  font-weight: 700;
+  box-shadow: 2px 2px 0px var(--text);
+  position: relative;
+  z-index: 2;
+}
+
+.header-btn:hover {
+  background: #ffdb4d;
+  transform: translateY(-1px);
+}
+
+.header-btn:active {
+  transform: translate(2px, 2px);
+  box-shadow: 0px 0px 0px var(--text);
+}
+
+.header-btn--active {
+  background: var(--surface);
+}
+
+/* Header Avatar */
 .header-avatar, .message--bot .message-avatar {
-  font-size: 0 !important; /* Hides the default text emoji */
+  font-size: 0 !important;
   background-color: var(--surface);
   border: 2px solid var(--text);
   box-shadow: var(--shadow-sm);
   background-position: center 3px;
   background-repeat: no-repeat;
   background-size: 85%;
-  /* Inline SVG: Hello Kitty Face */
+  position: relative;
+  z-index: 2;
   background-image: url('data:image/svg+xml;utf8,<svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg"><polygon points="10,40 15,10 40,25" fill="%23fff" stroke="%234a3036" stroke-width="4" stroke-linejoin="round"/><polygon points="90,40 85,10 60,25" fill="%23fff" stroke="%234a3036" stroke-width="4" stroke-linejoin="round"/><ellipse cx="50" cy="55" rx="42" ry="32" fill="%23fff" stroke="%234a3036" stroke-width="4"/><ellipse cx="50" cy="55" rx="39" ry="29" fill="%23fff"/><ellipse cx="32" cy="55" rx="3.5" ry="5.5" fill="%234a3036"/><ellipse cx="68" cy="55" rx="3.5" ry="5.5" fill="%234a3036"/><ellipse cx="50" cy="63" rx="4.5" ry="3" fill="%23ffcc00" stroke="%234a3036" stroke-width="2"/><line x1="8" y1="48" x2="22" y2="51" stroke="%234a3036" stroke-width="3" stroke-linecap="round"/><line x1="5" y1="58" x2="20" y2="58" stroke="%234a3036" stroke-width="3" stroke-linecap="round"/><line x1="8" y1="68" x2="22" y2="65" stroke="%234a3036" stroke-width="3" stroke-linecap="round"/><line x1="92" y1="48" x2="78" y2="51" stroke="%234a3036" stroke-width="3" stroke-linecap="round"/><line x1="95" y1="58" x2="80" y2="58" stroke="%234a3036" stroke-width="3" stroke-linecap="round"/><line x1="92" y1="68" x2="78" y2="65" stroke="%234a3036" stroke-width="3" stroke-linecap="round"/><path d="M78 20 C88 12, 98 25, 85 35 Z" fill="%23ff0033" stroke="%234a3036" stroke-width="3" stroke-linejoin="round"/><path d="M62 20 C52 12, 42 25, 55 35 Z" fill="%23ff0033" stroke="%234a3036" stroke-width="3" stroke-linejoin="round"/><circle cx="70" cy="28" r="7" fill="%23ff0033" stroke="%234a3036" stroke-width="3"/></svg>');
 }
 
-.header-avatar {
-  width: 48px; height: 48px;
-}
-.message--bot .message-avatar {
-  width: 38px; height: 38px;
-}
+.header-avatar { width: 48px; height: 48px; }
+.message--bot .message-avatar { width: 38px; height: 38px; }
 
-/* ===== Chat Messages Area ===== */
+/* ===== Chat Messages ===== */
 .chat-messages {
-  background: transparent; /* Lets the polka dots show through */
-  padding-top: 1.5rem; /* Space for the scalloped header */
+  background: transparent;
+  padding-top: 1.5rem;
   z-index: 1;
 }
 
-/* ===== Bot Bubbles (Cloud shaped) ===== */
+/* Bot Bubbles */
 .message--bot .message-bubble {
   background: var(--surface);
   color: var(--text);
@@ -149,13 +183,12 @@ body, input, button {
   bottom: -8px; right: -8px;
   background-size: contain;
   background-repeat: no-repeat;
-  /* Inline SVG: Apple */
   background-image: url('data:image/svg+xml;utf8,<svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg"><path d="M50 20 Q65 5 75 15 Q60 25 50 20 Z" fill="%234caf50" stroke="%234a3036" stroke-width="3"/><path d="M50 25 Q55 10 60 5" fill="none" stroke="%234a3036" stroke-width="4" stroke-linecap="round"/><path d="M50 25 C20 20, 10 50, 25 80 C35 95, 45 90, 50 85 C55 90, 65 95, 75 80 C90 50, 80 20, 50 25 Z" fill="%23ff0033" stroke="%234a3036" stroke-width="4" stroke-linejoin="round"/><path d="M25 45 Q30 35 40 35" fill="none" stroke="%23fff" stroke-width="4" stroke-linecap="round" opacity="0.6"/></svg>');
   animation: floatBounce 3s ease-in-out infinite;
   filter: drop-shadow(1px 1px 0px var(--text));
 }
 
-/* ===== User Bubbles ===== */
+/* User Bubbles */
 .message--user .message-bubble {
   background: var(--primary);
   color: white;
@@ -170,7 +203,7 @@ body, input, button {
   margin-top: 4px;
 }
 
-/* ===== Feedback Buttons (Sparkle state) ===== */
+/* Feedback Buttons */
 .feedback-btn {
   border: 2px solid var(--border);
   background: var(--surface);
@@ -202,22 +235,36 @@ body, input, button {
   box-shadow: var(--shadow-sm);
 }
 
-/* ===== Typing Indicator ===== */
+/* ===== Kawaii Typing Indicator (Apple, Milk, Bow) ===== */
 .typing-indicator {
   background: var(--surface);
   border: 2px solid var(--text);
   border-radius: 20px 20px 20px 5px;
   box-shadow: var(--shadow-sm);
+  align-items: center;
 }
 
 .typing-dot {
-  background: var(--primary);
-  width: 8px; height: 8px;
+  background-color: transparent !important;
+  background-size: contain;
+  background-repeat: no-repeat;
+  background-position: center;
+  width: 14px !important;
+  height: 14px !important;
+  border-radius: 0 !important;
 }
-.typing-dot:nth-child(2) { background: var(--warning); }
-.typing-dot:nth-child(3) { background: var(--success); }
 
-/* ===== Quick Questions (Stitched Look & Wiggle) ===== */
+.typing-dot:nth-child(1) {
+  background-image: url('data:image/svg+xml;utf8,<svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg"><path d="M50 25 C20 20, 10 50, 25 80 C35 95, 45 90, 50 85 C55 90, 65 95, 75 80 C90 50, 80 20, 50 25 Z" fill="%23ff0033" stroke="%234a3036" stroke-width="6" stroke-linejoin="round"/></svg>');
+}
+.typing-dot:nth-child(2) {
+  background-image: url('data:image/svg+xml;utf8,<svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg"><path d="M30 20 L70 20 L80 90 L20 90 Z" fill="%23ffffff" stroke="%234a3036" stroke-width="6" stroke-linejoin="round"/></svg>');
+}
+.typing-dot:nth-child(3) {
+  background-image: url('data:image/svg+xml;utf8,<svg viewBox="0 0 100 60" xmlns="http://www.w3.org/2000/svg"><path d="M50 30 C30 10, 5 20, 15 45 C5 60, 30 55, 45 35 Z" fill="%23ff0033" stroke="%234a3036" stroke-width="6"/><path d="M50 30 C70 10, 95 20, 85 45 C95 60, 70 55, 55 35 Z" fill="%23ff0033" stroke="%234a3036" stroke-width="6"/><circle cx="50" cy="30" r="10" fill="%23ffffff" stroke="%234a3036" stroke-width="6"/></svg>');
+}
+
+/* Quick Questions */
 .quick-questions {
   background: var(--surface);
   border-top: 3px solid var(--text);
@@ -242,7 +289,7 @@ body, input, button {
   animation: wiggle 0.4s ease-in-out infinite;
 }
 
-/* ===== Input Area & Send Button ===== */
+/* Input Area */
 .chat-input-area {
   background: var(--surface);
   border-top: 2px solid var(--border);
@@ -257,17 +304,13 @@ body, input, button {
   color: var(--text);
 }
 
-.chat-input::placeholder {
-  color: var(--text-muted);
-}
-
 .chat-input:focus {
   background: var(--surface);
   border-color: var(--primary);
   box-shadow: 0 0 0 4px var(--kitty-pink);
 }
 
-/* Replace Send Icon with Red Bow */
+/* Send Button */
 .send-btn {
   background: var(--primary);
   border: 2px solid var(--text);
@@ -281,7 +324,7 @@ body, input, button {
 }
 
 .send-btn svg {
-  display: none !important; /* Hide original arrow */
+  display: none !important;
 }
 
 .send-btn::after {
@@ -290,95 +333,112 @@ body, input, button {
   background-size: contain;
   background-repeat: no-repeat;
   background-position: center;
-  /* Inline SVG: Red Bow */
   background-image: url('data:image/svg+xml;utf8,<svg viewBox="0 0 100 60" xmlns="http://www.w3.org/2000/svg"><path d="M50 30 C30 10, 5 20, 15 45 C5 60, 30 55, 45 35 Z" fill="%23ffffff" stroke="%234a3036" stroke-width="4" stroke-linejoin="round"/><path d="M50 30 C70 10, 95 20, 85 45 C95 60, 70 55, 55 35 Z" fill="%23ffffff" stroke="%234a3036" stroke-width="4" stroke-linejoin="round"/><circle cx="50" cy="30" r="10" fill="%23ffffff" stroke="%234a3036" stroke-width="4"/></svg>');
 }
 
-/* ===== Header Action Buttons ===== */
-.demo-btn, .export-btn {
-  border: 2px solid var(--text);
-  background: var(--warning);
-  color: var(--text);
-  border-radius: 12px;
-  font-weight: 700;
-  box-shadow: 2px 2px 0px var(--text);
+/* ===== Magic VFX Elements ===== */
+.hk-particle {
+  position: absolute;
+  pointer-events: none;
+  will-change: transform, opacity;
+  z-index: 10000;
 }
 
-.demo-btn:hover, .export-btn:hover {
-  background: #ffdb4d;
-  transform: translateY(-1px);
+.hk-sparkle {
+  width: 16px; height: 16px;
+  background-image: url('data:image/svg+xml;utf8,<svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg"><path d="M50 0 L60 40 L100 50 L60 60 L50 100 L40 60 L0 50 L40 40 Z" fill="%23ffcc00"/></svg>');
+  background-size: contain;
+  background-repeat: no-repeat;
+  transform: translate(-50%, -50%) scale(0);
+  animation: explode 0.6s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
 }
 
-.demo-btn:active, .export-btn:active {
-  transform: translate(2px, 2px);
-  box-shadow: 0px 0px 0px var(--text);
+.hk-confetti {
+  width: 8px; height: 12px;
+  border-radius: 2px;
+  border: 1px solid rgba(74, 48, 54, 0.5);
+  transform: translate(-50%, -50%) rotate(0deg) scale(0);
+  animation: confettiExplode 0.8s cubic-bezier(0.25, 0.46, 0.45, 0.94) forwards;
 }
 
-.demo-btn--active {
-  background: var(--surface);
+.hk-petal {
+  position: absolute;
+  top: -20px;
+  width: 14px; height: 14px;
+  background: var(--kitty-pink);
+  border-radius: 14px 0 14px 0;
+  border: 1px solid var(--text-muted);
+  opacity: 0.6;
+  pointer-events: none;
+  animation: fall linear forwards;
 }
 
-/* ===== Custom Pill Scrollbar ===== */
-.chat-messages::-webkit-scrollbar {
-  width: 8px;
-}
-.chat-messages::-webkit-scrollbar-track {
-  background: var(--kitty-light-pink);
-  border-left: 2px solid var(--border);
-}
-.chat-messages::-webkit-scrollbar-thumb {
-  background: var(--primary-light);
-  border: 2px solid var(--surface);
-  border-radius: 10px;
-}
-.chat-messages::-webkit-scrollbar-thumb:hover {
-  background: var(--primary);
+.bot-sparkle-container {
+  position: absolute;
+  top: 0; left: 0;
+  pointer-events: none;
 }
 
-/* ===== Markdown Overrides ===== */
-.message-bubble code {
-  background: var(--kitty-light-pink);
-  color: var(--primary-dark);
-  border: 2px solid var(--border);
-  font-weight: 700;
-  border-radius: 8px;
+.bot-sparkle {
+  position: absolute;
+  width: 12px; height: 12px;
+  background-image: url('data:image/svg+xml;utf8,<svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg"><path d="M50 0 L60 40 L100 50 L60 60 L50 100 L40 60 L0 50 L40 40 Z" fill="%23ffcc00"/></svg>');
+  background-size: contain;
+  animation: floatUp 1.2s ease-out forwards;
 }
 
-/* ===== Kawaii Animations ===== */
-
-/* Override default slide up with a bouncy pop */
-.message {
-  animation: springUp 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards !important;
-}
+/* ===== Animations ===== */
+.message { animation: springUp 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards !important; }
 
 @keyframes springUp {
   from { opacity: 0; transform: translateY(20px) scale(0.9); }
   to { opacity: 1; transform: translateY(0) scale(1); }
 }
-
 @keyframes floatBounce {
   0%, 100% { transform: translateY(0) rotate(0deg); }
   50% { transform: translateY(-5px) rotate(5deg); }
 }
-
 @keyframes wiggle {
   0%, 100% { transform: rotate(0deg); }
   25% { transform: rotate(-4deg); }
   75% { transform: rotate(4deg); }
 }
-
 @keyframes popSparkle {
   0% { transform: scale(1); }
   50% { transform: scale(1.25); }
   100% { transform: scale(1); }
 }
-
 @keyframes bgDrift {
   from { background-position: 0 0, 15px 15px; }
   to { background-position: -60px -60px, -45px -45px; }
 }
+@keyframes shimmer { 
+  0%, 70% { left: -50%; } 
+  100% { left: 150%; } 
+}
+@keyframes explode {
+  0% { transform: translate(-50%, -50%) scale(0); opacity: 1; }
+  50% { transform: translate(calc(-50% + var(--tx)), calc(-50% + var(--ty))) scale(1); opacity: 1; }
+  100% { transform: translate(calc(-50% + var(--tx) * 1.5), calc(-50% + var(--ty) * 1.5)) scale(0); opacity: 0; }
+}
+@keyframes confettiExplode {
+  0% { transform: translate(-50%, -50%) rotate(0deg) scale(0); opacity: 1; }
+  50% { transform: translate(calc(-50% + var(--tx)), calc(-50% + var(--ty))) rotate(var(--rot)) scale(1); opacity: 1; }
+  100% { transform: translate(calc(-50% + var(--tx)), calc(-50% + var(--ty) + 40px)) rotate(calc(var(--rot) + 180deg)) scale(0); opacity: 0; }
+}
+@keyframes fall {
+  0% { transform: translateY(-20px) rotate(0deg) translateX(0px); opacity: 0; }
+  10% { opacity: 0.8; }
+  90% { opacity: 0.8; }
+  100% { transform: translateY(105vh) rotate(720deg) translateX(50px); opacity: 0; }
+}
+@keyframes floatUp {
+  0% { transform: translateY(0) scale(0); opacity: 1; }
+  30% { transform: translateY(-10px) scale(1); opacity: 1; }
+  100% { transform: translateY(-25px) scale(0); opacity: 0; }
+}
 
-/* ===== Toast Override ===== */
+/* Toast */
 .toast {
   background: var(--surface);
   color: var(--text);
@@ -391,7 +451,5 @@ body, input, button {
 /* Reduced motion support */
 @media (prefers-reduced-motion: reduce) {
   #app { animation: none; }
-  .message { animation: none !important; }
-  .quick-btn:hover { animation: none; }
-  .message--bot .message-bubble::after { animation: none; }
+  .message, .hk-particle, .hk-petal, .bot-sparkle, .chat-header::before { animation: none !important; display: none !important; }
 }
