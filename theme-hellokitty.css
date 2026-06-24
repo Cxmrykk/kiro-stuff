@@ -35,9 +35,44 @@
   --font: 'Quicksand', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
 }
 
-body, input, button {
+/* ===== Custom Cursor & Scrollbar ===== */
+body, .chat-input, .header-btn, .quick-btn, .send-btn, .feedback-btn {
   font-family: var(--font) !important;
   font-weight: 600;
+  cursor: url('data:image/svg+xml;utf8,<svg width="24" height="24" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg"><path d="M50 50 L10 20 L10 80 Z" fill="%23ff0033" stroke="%234a3036" stroke-width="6" stroke-linejoin="round"/><path d="M50 50 L90 20 L90 80 Z" fill="%23ff0033" stroke="%234a3036" stroke-width="6" stroke-linejoin="round"/><circle cx="50" cy="50" r="15" fill="%23ffffff" stroke="%234a3036" stroke-width="6"/></svg>') 12 12, auto !important;
+}
+
+::-webkit-scrollbar { width: 14px; }
+::-webkit-scrollbar-track { 
+  background: var(--kitty-light-pink); 
+  border-left: 2px solid var(--text); 
+}
+::-webkit-scrollbar-thumb { 
+  background: var(--primary); 
+  border: 3px solid var(--kitty-light-pink); 
+  border-radius: 10px; 
+}
+
+/* ===== Kuromi Easter Egg Mode Override ===== */
+body.kuromi-mode {
+  --primary: #2b2b2b;
+  --primary-light: #594a5e;
+  --primary-dark: #1a1a1a;
+  --bg: #3a2e3d;
+  --surface: #e8d8ea;
+  --text: #1a1a1a;
+  --text-muted: #665c68;
+  --border: #4a3036;
+  --kitty-pink: #d8b4e2;
+  --kitty-light-pink: #b294b8;
+  --warning: #b666ff;
+  --success: #ff6680;
+  --user-bubble: #1a1a1a;
+}
+body.kuromi-mode #app {
+  background-image: 
+    radial-gradient(#1a1a1a 20%, transparent 21%),
+    radial-gradient(#1a1a1a 20%, transparent 21%);
 }
 
 /* ===== App Container (Polka Dot Background) ===== */
@@ -69,7 +104,7 @@ body, input, button {
     radial-gradient(rgba(255,255,255,0.25) 15%, transparent 16%);
   background-size: 16px 16px;
   background-position: 0 0, 8px 8px;
-  overflow: hidden; /* For shimmer effect */
+  overflow: hidden; 
 }
 
 /* Scalloped Awning Effect */
@@ -141,7 +176,7 @@ body, input, button {
   background: var(--surface);
 }
 
-/* Header Avatar */
+/* Base Avatar Styling */
 .header-avatar, .message--bot .message-avatar {
   font-size: 0 !important;
   background-color: var(--surface);
@@ -152,11 +187,30 @@ body, input, button {
   background-size: 85%;
   position: relative;
   z-index: 2;
-  background-image: url('data:image/svg+xml;utf8,<svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg"><polygon points="10,40 15,10 40,25" fill="%23fff" stroke="%234a3036" stroke-width="4" stroke-linejoin="round"/><polygon points="90,40 85,10 60,25" fill="%23fff" stroke="%234a3036" stroke-width="4" stroke-linejoin="round"/><ellipse cx="50" cy="55" rx="42" ry="32" fill="%23fff" stroke="%234a3036" stroke-width="4"/><ellipse cx="50" cy="55" rx="39" ry="29" fill="%23fff"/><ellipse cx="32" cy="55" rx="3.5" ry="5.5" fill="%234a3036"/><ellipse cx="68" cy="55" rx="3.5" ry="5.5" fill="%234a3036"/><ellipse cx="50" cy="63" rx="4.5" ry="3" fill="%23ffcc00" stroke="%234a3036" stroke-width="2"/><line x1="8" y1="48" x2="22" y2="51" stroke="%234a3036" stroke-width="3" stroke-linecap="round"/><line x1="5" y1="58" x2="20" y2="58" stroke="%234a3036" stroke-width="3" stroke-linecap="round"/><line x1="8" y1="68" x2="22" y2="65" stroke="%234a3036" stroke-width="3" stroke-linecap="round"/><line x1="92" y1="48" x2="78" y2="51" stroke="%234a3036" stroke-width="3" stroke-linecap="round"/><line x1="95" y1="58" x2="80" y2="58" stroke="%234a3036" stroke-width="3" stroke-linecap="round"/><line x1="92" y1="68" x2="78" y2="65" stroke="%234a3036" stroke-width="3" stroke-linecap="round"/><path d="M78 20 C88 12, 98 25, 85 35 Z" fill="%23ff0033" stroke="%234a3036" stroke-width="3" stroke-linejoin="round"/><path d="M62 20 C52 12, 42 25, 55 35 Z" fill="%23ff0033" stroke="%234a3036" stroke-width="3" stroke-linejoin="round"/><circle cx="70" cy="28" r="7" fill="%23ff0033" stroke="%234a3036" stroke-width="3"/></svg>');
+  transition: transform 0.2s ease;
 }
+.header-avatar:hover { transform: scale(1.1) rotate(-5deg); cursor: pointer !important; }
 
 .header-avatar { width: 48px; height: 48px; }
 .message--bot .message-avatar { width: 38px; height: 38px; }
+
+/* Dynamic Expression Avatars */
+/* 1. Normal (Default Kitty) */
+.header-avatar, .message--bot .message-avatar {
+  background-image: url('data:image/svg+xml;utf8,<svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg"><polygon points="10,40 15,10 40,25" fill="%23fff" stroke="%234a3036" stroke-width="4" stroke-linejoin="round"/><polygon points="90,40 85,10 60,25" fill="%23fff" stroke="%234a3036" stroke-width="4" stroke-linejoin="round"/><ellipse cx="50" cy="55" rx="42" ry="32" fill="%23fff" stroke="%234a3036" stroke-width="4"/><ellipse cx="50" cy="55" rx="39" ry="29" fill="%23fff"/><ellipse cx="32" cy="55" rx="3.5" ry="5.5" fill="%234a3036"/><ellipse cx="68" cy="55" rx="3.5" ry="5.5" fill="%234a3036"/><ellipse cx="50" cy="63" rx="4.5" ry="3" fill="%23ffcc00" stroke="%234a3036" stroke-width="2"/><line x1="8" y1="48" x2="22" y2="51" stroke="%234a3036" stroke-width="3" stroke-linecap="round"/><line x1="5" y1="58" x2="20" y2="58" stroke="%234a3036" stroke-width="3" stroke-linecap="round"/><line x1="8" y1="68" x2="22" y2="65" stroke="%234a3036" stroke-width="3" stroke-linecap="round"/><line x1="92" y1="48" x2="78" y2="51" stroke="%234a3036" stroke-width="3" stroke-linecap="round"/><line x1="95" y1="58" x2="80" y2="58" stroke="%234a3036" stroke-width="3" stroke-linecap="round"/><line x1="92" y1="68" x2="78" y2="65" stroke="%234a3036" stroke-width="3" stroke-linecap="round"/><path d="M78 20 C88 12, 98 25, 85 35 Z" fill="%23ff0033" stroke="%234a3036" stroke-width="3" stroke-linejoin="round"/><path d="M62 20 C52 12, 42 25, 55 35 Z" fill="%23ff0033" stroke="%234a3036" stroke-width="3" stroke-linejoin="round"/><circle cx="70" cy="28" r="7" fill="%23ff0033" stroke="%234a3036" stroke-width="3"/></svg>');
+}
+/* 2. Success (Star Eyes) */
+.avatar-success .message-avatar {
+  background-image: url('data:image/svg+xml;utf8,<svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg"><polygon points="10,40 15,10 40,25" fill="%23fff" stroke="%234a3036" stroke-width="4" stroke-linejoin="round"/><polygon points="90,40 85,10 60,25" fill="%23fff" stroke="%234a3036" stroke-width="4" stroke-linejoin="round"/><ellipse cx="50" cy="55" rx="42" ry="32" fill="%23fff" stroke="%234a3036" stroke-width="4"/><ellipse cx="50" cy="55" rx="39" ry="29" fill="%23fff"/><path d="M 28 55 L 36 55 L 32 48 L 28 55" fill="%23ffcc00" stroke="%234a3036" stroke-width="2"/><path d="M 64 55 L 72 55 L 68 48 L 64 55" fill="%23ffcc00" stroke="%234a3036" stroke-width="2"/><ellipse cx="50" cy="63" rx="4.5" ry="3" fill="%23ffcc00" stroke="%234a3036" stroke-width="2"/><line x1="8" y1="48" x2="22" y2="51" stroke="%234a3036" stroke-width="3" stroke-linecap="round"/><line x1="5" y1="58" x2="20" y2="58" stroke="%234a3036" stroke-width="3" stroke-linecap="round"/><line x1="8" y1="68" x2="22" y2="65" stroke="%234a3036" stroke-width="3" stroke-linecap="round"/><line x1="92" y1="48" x2="78" y2="51" stroke="%234a3036" stroke-width="3" stroke-linecap="round"/><line x1="95" y1="58" x2="80" y2="58" stroke="%234a3036" stroke-width="3" stroke-linecap="round"/><line x1="92" y1="68" x2="78" y2="65" stroke="%234a3036" stroke-width="3" stroke-linecap="round"/><path d="M78 20 C88 12, 98 25, 85 35 Z" fill="%23ff0033" stroke="%234a3036" stroke-width="3" stroke-linejoin="round"/><path d="M62 20 C52 12, 42 25, 55 35 Z" fill="%23ff0033" stroke="%234a3036" stroke-width="3" stroke-linejoin="round"/><circle cx="70" cy="28" r="7" fill="%23ff0033" stroke="%234a3036" stroke-width="3"/></svg>');
+}
+/* 3. Fallback (Confused & Sweat Drop) */
+.avatar-fallback .message-avatar {
+  background-image: url('data:image/svg+xml;utf8,<svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg"><polygon points="10,40 15,10 40,25" fill="%23fff" stroke="%234a3036" stroke-width="4" stroke-linejoin="round"/><polygon points="90,40 85,10 60,25" fill="%23fff" stroke="%234a3036" stroke-width="4" stroke-linejoin="round"/><ellipse cx="50" cy="55" rx="42" ry="32" fill="%23fff" stroke="%234a3036" stroke-width="4"/><ellipse cx="50" cy="55" rx="39" ry="29" fill="%23fff"/><ellipse cx="32" cy="55" rx="3.5" ry="5.5" fill="%234a3036"/><ellipse cx="68" cy="55" rx="3.5" ry="5.5" fill="%234a3036"/><line x1="42" y1="68" x2="58" y2="68" stroke="%234a3036" stroke-width="3" stroke-linecap="round"/><path d="M 80 40 Q 90 50 85 60 Q 75 60 80 40 Z" fill="%2300d4ff" stroke="%234a3036" stroke-width="2"/><line x1="8" y1="48" x2="22" y2="51" stroke="%234a3036" stroke-width="3" stroke-linecap="round"/><line x1="5" y1="58" x2="20" y2="58" stroke="%234a3036" stroke-width="3" stroke-linecap="round"/><line x1="8" y1="68" x2="22" y2="65" stroke="%234a3036" stroke-width="3" stroke-linecap="round"/><line x1="92" y1="48" x2="78" y2="51" stroke="%234a3036" stroke-width="3" stroke-linecap="round"/><line x1="95" y1="58" x2="80" y2="58" stroke="%234a3036" stroke-width="3" stroke-linecap="round"/><line x1="92" y1="68" x2="78" y2="65" stroke="%234a3036" stroke-width="3" stroke-linecap="round"/><path d="M78 20 C88 12, 98 25, 85 35 Z" fill="%23ff0033" stroke="%234a3036" stroke-width="3" stroke-linejoin="round"/><path d="M62 20 C52 12, 42 25, 55 35 Z" fill="%23ff0033" stroke="%234a3036" stroke-width="3" stroke-linejoin="round"/><circle cx="70" cy="28" r="7" fill="%23ff0033" stroke="%234a3036" stroke-width="3"/></svg>');
+}
+/* 4. Kuromi Mode Avatar */
+.avatar-kuromi .message-avatar {
+  background-image: url('data:image/svg+xml;utf8,<svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg"><polygon points="10,40 15,10 40,25" fill="%231a1a1a" stroke="%234a3036" stroke-width="4" stroke-linejoin="round"/><polygon points="90,40 85,10 60,25" fill="%231a1a1a" stroke="%234a3036" stroke-width="4" stroke-linejoin="round"/><ellipse cx="50" cy="55" rx="42" ry="32" fill="%23fff" stroke="%234a3036" stroke-width="4"/><ellipse cx="50" cy="55" rx="39" ry="29" fill="%23fff"/><path d="M 28 55 Q 32 50 36 55" fill="none" stroke="%234a3036" stroke-width="3" stroke-linecap="round"/><path d="M 64 55 Q 68 50 72 55" fill="none" stroke="%234a3036" stroke-width="3" stroke-linecap="round"/><ellipse cx="50" cy="63" rx="4.5" ry="3" fill="%23b666ff" stroke="%234a3036" stroke-width="2"/><path d="M78 20 C88 12, 98 25, 85 35 Z" fill="%23b666ff" stroke="%234a3036" stroke-width="3" stroke-linejoin="round"/><path d="M62 20 C52 12, 42 25, 55 35 Z" fill="%23b666ff" stroke="%234a3036" stroke-width="3" stroke-linejoin="round"/><circle cx="70" cy="28" r="7" fill="%23b666ff" stroke="%234a3036" stroke-width="3"/></svg>');
+}
 
 /* ===== Chat Messages ===== */
 .chat-messages {
@@ -165,7 +219,7 @@ body, input, button {
   z-index: 1;
 }
 
-/* Bot Bubbles */
+/* Bot Bubbles - Bow Pinned */
 .message--bot .message-bubble {
   background: var(--surface);
   color: var(--text);
@@ -173,6 +227,19 @@ body, input, button {
   border-radius: 20px 20px 20px 5px !important;
   box-shadow: var(--shadow-sm);
   position: relative;
+}
+
+.message--bot .message-bubble::before {
+  content: "";
+  position: absolute;
+  top: -12px; left: -10px;
+  width: 28px; height: 28px;
+  background-image: url('data:image/svg+xml;utf8,<svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg"><path d="M50 50 L10 20 L10 80 Z" fill="%23ff0033" stroke="%234a3036" stroke-width="6" stroke-linejoin="round"/><path d="M50 50 L90 20 L90 80 Z" fill="%23ff0033" stroke="%234a3036" stroke-width="6" stroke-linejoin="round"/><circle cx="50" cy="50" r="15" fill="%23ffffff" stroke="%234a3036" stroke-width="6"/></svg>');
+  background-size: contain;
+  background-repeat: no-repeat;
+  z-index: 5;
+  transform: rotate(-15deg);
+  filter: drop-shadow(1px 1px 0px var(--text));
 }
 
 /* Floating Apple on Bot Bubbles */
@@ -201,6 +268,17 @@ body, input, button {
   color: var(--text-muted);
   font-weight: 700;
   margin-top: 4px;
+}
+
+/* Sparkle Text Effect */
+.sparkle-text {
+  background: linear-gradient(90deg, #ff6680, #ffcc00, #4caf50, #00d4ff, #b666ff, #ff6680);
+  background-size: 200% auto;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  animation: shine 2.5s linear infinite;
+  font-weight: 800;
+  display: inline-block;
 }
 
 /* Feedback Buttons */
@@ -235,7 +313,7 @@ body, input, button {
   box-shadow: var(--shadow-sm);
 }
 
-/* ===== Kawaii Typing Indicator (Apple, Milk, Bow) ===== */
+/* ===== Kawaii Typing Indicator ===== */
 .typing-indicator {
   background: var(--surface);
   border: 2px solid var(--text);
@@ -243,7 +321,6 @@ body, input, button {
   box-shadow: var(--shadow-sm);
   align-items: center;
 }
-
 .typing-dot {
   background-color: transparent !important;
   background-size: contain;
@@ -253,7 +330,6 @@ body, input, button {
   height: 14px !important;
   border-radius: 0 !important;
 }
-
 .typing-dot:nth-child(1) {
   background-image: url('data:image/svg+xml;utf8,<svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg"><path d="M50 25 C20 20, 10 50, 25 80 C35 95, 45 90, 50 85 C55 90, 65 95, 75 80 C90 50, 80 20, 50 25 Z" fill="%23ff0033" stroke="%234a3036" stroke-width="6" stroke-linejoin="round"/></svg>');
 }
@@ -270,7 +346,6 @@ body, input, button {
   border-top: 3px solid var(--text);
   padding: 0.8rem 1rem;
 }
-
 .quick-btn {
   background: var(--surface);
   border: 2px dashed var(--primary-light);
@@ -279,7 +354,6 @@ body, input, button {
   font-weight: 700;
   box-shadow: none;
 }
-
 .quick-btn:hover {
   border-style: solid;
   border-color: var(--text);
@@ -295,7 +369,6 @@ body, input, button {
   border-top: 2px solid var(--border);
   padding: 1rem;
 }
-
 .chat-input {
   background: var(--kitty-light-pink);
   border: 2px solid var(--text);
@@ -303,7 +376,6 @@ body, input, button {
   font-weight: 600;
   color: var(--text);
 }
-
 .chat-input:focus {
   background: var(--surface);
   border-color: var(--primary);
@@ -317,16 +389,13 @@ body, input, button {
   box-shadow: var(--shadow-sm);
   width: 44px; height: 44px;
 }
-
 .send-btn:active {
   transform: translate(2px, 2px) !important;
   box-shadow: 0px 0px 0px var(--text) !important;
 }
-
 .send-btn svg {
   display: none !important;
 }
-
 .send-btn::after {
   content: "";
   width: 22px; height: 22px;
@@ -337,18 +406,33 @@ body, input, button {
 }
 
 /* ===== Magic VFX Elements ===== */
-.hk-particle {
+.hk-particle, .hk-ambient, .hk-trail-star, .hk-cannon-star, .hk-heart-float {
   position: absolute;
   pointer-events: none;
   will-change: transform, opacity;
   z-index: 10000;
 }
 
+.hk-trail-star {
+  width: 12px; height: 12px;
+  background-image: url('data:image/svg+xml;utf8,<svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg"><path d="M50 0 L60 40 L100 50 L60 60 L50 100 L40 60 L0 50 L40 40 Z" fill="%23ffcc00"/></svg>');
+  background-size: contain;
+  transform: translate(-50%, -50%) scale(1);
+  animation: shrinkFade 0.6s linear forwards;
+}
+
+.hk-cannon-star {
+  width: 16px; height: 16px;
+  background-image: url('data:image/svg+xml;utf8,<svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg"><path d="M50 0 L60 40 L100 50 L60 60 L50 100 L40 60 L0 50 L40 40 Z" fill="%23ff6680"/></svg>');
+  background-size: contain;
+  transform: translate(-50%, -50%) rotate(0deg) scale(0);
+  animation: confettiExplode 0.8s cubic-bezier(0.25, 0.46, 0.45, 0.94) forwards;
+}
+
 .hk-sparkle {
   width: 16px; height: 16px;
   background-image: url('data:image/svg+xml;utf8,<svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg"><path d="M50 0 L60 40 L100 50 L60 60 L50 100 L40 60 L0 50 L40 40 Z" fill="%23ffcc00"/></svg>');
   background-size: contain;
-  background-repeat: no-repeat;
   transform: translate(-50%, -50%) scale(0);
   animation: explode 0.6s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
 }
@@ -361,16 +445,42 @@ body, input, button {
   animation: confettiExplode 0.8s cubic-bezier(0.25, 0.46, 0.45, 0.94) forwards;
 }
 
-.hk-petal {
-  position: absolute;
-  top: -20px;
+.hk-heart-float {
+  width: 24px; height: 24px;
+  background-image: url('data:image/svg+xml;utf8,<svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg"><path d="M50 30 C30 10, 5 20, 15 45 C5 60, 30 55, 45 35 Z" fill="%23ff6680" stroke="%234a3036" stroke-width="4"/><path d="M50 30 C70 10, 95 20, 85 45 C95 60, 70 55, 55 35 Z" fill="%23ff6680" stroke="%234a3036" stroke-width="4"/></svg>');
+  background-size: contain;
+  animation: floatHeart 1.5s ease-in forwards;
+}
+
+/* Expanded Ambient Falling Objects */
+.hk-ambient {
+  top: -40px;
+  opacity: 0.8;
+  animation: fall linear forwards;
+}
+.hk-ambient-petal {
   width: 14px; height: 14px;
   background: var(--kitty-pink);
   border-radius: 14px 0 14px 0;
   border: 1px solid var(--text-muted);
-  opacity: 0.6;
-  pointer-events: none;
-  animation: fall linear forwards;
+}
+.hk-ambient-apple {
+  width: 24px; height: 24px;
+  background-image: url('data:image/svg+xml;utf8,<svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg"><path d="M50 20 Q65 5 75 15 Q60 25 50 20 Z" fill="%234caf50" stroke="%234a3036" stroke-width="4"/><path d="M50 25 C20 20, 10 50, 25 80 C35 95, 45 90, 50 85 C55 90, 65 95, 75 80 C90 50, 80 20, 50 25 Z" fill="%23ff0033" stroke="%234a3036" stroke-width="4" stroke-linejoin="round"/></svg>');
+  background-size: contain;
+  filter: drop-shadow(1px 1px 0px rgba(0,0,0,0.2));
+}
+.hk-ambient-milk {
+  width: 20px; height: 28px;
+  background-image: url('data:image/svg+xml;utf8,<svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg"><rect x="30" y="40" width="40" height="50" rx="5" fill="%23fff" stroke="%234a3036" stroke-width="4"/><rect x="40" y="10" width="20" height="30" fill="%23fff" stroke="%234a3036" stroke-width="4"/><rect x="35" y="10" width="30" height="10" fill="%23ff0033" stroke="%234a3036" stroke-width="4"/><path d="M 40 50 L 60 50 M 40 60 L 60 60" stroke="%234a3036" stroke-width="3" stroke-linecap="round"/></svg>');
+  background-size: contain;
+  filter: drop-shadow(1px 1px 0px rgba(0,0,0,0.2));
+}
+.hk-ambient-button {
+  width: 20px; height: 20px;
+  background-image: url('data:image/svg+xml;utf8,<svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg"><circle cx="50" cy="50" r="40" fill="%23ffcc00" stroke="%234a3036" stroke-width="4"/><circle cx="35" cy="50" r="6" fill="%234a3036"/><circle cx="65" cy="50" r="6" fill="%234a3036"/></svg>');
+  background-size: contain;
+  filter: drop-shadow(1px 1px 0px rgba(0,0,0,0.2));
 }
 
 .bot-sparkle-container {
@@ -378,13 +488,31 @@ body, input, button {
   top: 0; left: 0;
   pointer-events: none;
 }
-
 .bot-sparkle {
   position: absolute;
   width: 12px; height: 12px;
   background-image: url('data:image/svg+xml;utf8,<svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg"><path d="M50 0 L60 40 L100 50 L60 60 L50 100 L40 60 L0 50 L40 40 Z" fill="%23ffcc00"/></svg>');
   background-size: contain;
   animation: floatUp 1.2s ease-out forwards;
+}
+
+/* Peekaboo Kitty Elements */
+#peekaboo-kitty {
+  position: fixed;
+  bottom: -150px;
+  right: 15%;
+  width: 120px;
+  height: 120px;
+  background-image: url('data:image/svg+xml;utf8,<svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg"><path d="M 20 100 L 20 60 C 20 20, 80 20, 80 60 L 80 100 Z" fill="%23fff" stroke="%234a3036" stroke-width="4"/><polygon points="20,60 10,20 40,35" fill="%23fff" stroke="%234a3036" stroke-width="4"/><polygon points="80,60 90,20 60,35" fill="%23fff" stroke="%234a3036" stroke-width="4"/><circle cx="35" cy="65" r="4" fill="%234a3036"/><circle cx="65" cy="65" r="4" fill="%234a3036"/><ellipse cx="50" cy="75" rx="5" ry="3" fill="%23ffcc00" stroke="%234a3036" stroke-width="2"/><path d="M75 30 C85 22, 95 35, 82 45 Z" fill="%23ff0033" stroke="%234a3036" stroke-width="3"/><path d="M59 30 C49 22, 39 35, 52 45 Z" fill="%23ff0033" stroke="%234a3036" stroke-width="3"/><circle cx="67" cy="38" r="7" fill="%23ff0033" stroke="%234a3036" stroke-width="3"/><path d="M 30 100 Q 30 90 40 90 Q 50 90 50 100 Z" fill="%23fff" stroke="%234a3036" stroke-width="4"/><path d="M 50 100 Q 50 90 60 90 Q 70 90 70 100 Z" fill="%23fff" stroke="%234a3036" stroke-width="4"/></svg>');
+  background-size: contain;
+  background-repeat: no-repeat;
+  transition: bottom 1.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+  z-index: 50;
+  pointer-events: none;
+  filter: drop-shadow(0 -2px 5px rgba(0,0,0,0.1));
+}
+#peekaboo-kitty.show {
+  bottom: -10px;
 }
 
 /* ===== Animations ===== */
@@ -416,6 +544,9 @@ body, input, button {
   0%, 70% { left: -50%; } 
   100% { left: 150%; } 
 }
+@keyframes shine { 
+  to { background-position: 200% center; } 
+}
 @keyframes explode {
   0% { transform: translate(-50%, -50%) scale(0); opacity: 1; }
   50% { transform: translate(calc(-50% + var(--tx)), calc(-50% + var(--ty))) scale(1); opacity: 1; }
@@ -437,6 +568,15 @@ body, input, button {
   30% { transform: translateY(-10px) scale(1); opacity: 1; }
   100% { transform: translateY(-25px) scale(0); opacity: 0; }
 }
+@keyframes floatHeart {
+  0% { transform: translate(0, 0) scale(0); opacity: 0; }
+  20% { transform: translate(calc(var(--tx) / 2), -15px) scale(1); opacity: 1; }
+  100% { transform: translate(var(--tx), -60px) scale(0); opacity: 0; }
+}
+@keyframes shrinkFade {
+  0% { transform: translate(-50%, -50%) scale(1); opacity: 0.8; }
+  100% { transform: translate(-50%, -50%) scale(0); opacity: 0; }
+}
 
 /* Toast */
 .toast {
@@ -451,5 +591,5 @@ body, input, button {
 /* Reduced motion support */
 @media (prefers-reduced-motion: reduce) {
   #app { animation: none; }
-  .message, .hk-particle, .hk-petal, .bot-sparkle, .chat-header::before { animation: none !important; display: none !important; }
+  .message, .hk-particle, .hk-ambient, .bot-sparkle, .hk-heart-float, .hk-trail-star, .chat-header::before { animation: none !important; display: none !important; }
 }

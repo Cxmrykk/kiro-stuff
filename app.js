@@ -25,10 +25,10 @@
   let demoAbort = false;
   let audioInitialized = false;
 
-  // === Kawaii Audio Engine (Web Audio API Synthesizer) ===
+  // === Kawaii Audio Engine ===
   const AudioEngine = {
     ctx: null,
-    muted: false, // Default is sound ON, but waits for interaction
+    muted: false,
     init() {
       if (!this.ctx) {
         const AudioContext = window.AudioContext || window.webkitAudioContext;
@@ -43,22 +43,16 @@
       try {
         const osc = this.ctx.createOscillator();
         const gain = this.ctx.createGain();
-        
         osc.type = type;
         osc.frequency.setValueAtTime(freq, this.ctx.currentTime);
-        if (slideFreq) {
-          osc.frequency.exponentialRampToValueAtTime(slideFreq, this.ctx.currentTime + duration);
-        }
-        
+        if (slideFreq) osc.frequency.exponentialRampToValueAtTime(slideFreq, this.ctx.currentTime + duration);
         gain.gain.setValueAtTime(vol, this.ctx.currentTime);
         gain.gain.exponentialRampToValueAtTime(0.01, this.ctx.currentTime + duration);
-        
         osc.connect(gain);
         gain.connect(this.ctx.destination);
-        
         osc.start();
         osc.stop(this.ctx.currentTime + duration);
-      } catch (e) { console.warn("Audio failed", e); }
+      } catch (e) {}
     },
     meow() {
       if (this.muted || !this.ctx) return;
@@ -66,24 +60,19 @@
         const osc = this.ctx.createOscillator();
         const gain = this.ctx.createGain();
         const filter = this.ctx.createBiquadFilter();
-
         osc.type = 'sawtooth';
         osc.frequency.setValueAtTime(500, this.ctx.currentTime);
         osc.frequency.linearRampToValueAtTime(800, this.ctx.currentTime + 0.1);
         osc.frequency.exponentialRampToValueAtTime(300, this.ctx.currentTime + 0.4);
-
         filter.type = 'bandpass';
         filter.frequency.value = 1000;
         filter.Q.value = 2;
-
         gain.gain.setValueAtTime(0, this.ctx.currentTime);
         gain.gain.linearRampToValueAtTime(0.1, this.ctx.currentTime + 0.1);
         gain.gain.linearRampToValueAtTime(0, this.ctx.currentTime + 0.4);
-
         osc.connect(filter);
         filter.connect(gain);
         gain.connect(this.ctx.destination);
-
         osc.start();
         osc.stop(this.ctx.currentTime + 0.4);
       } catch(e) {}
@@ -105,30 +94,66 @@
   // === Magic Visual Effects Engine ===
   const VFX = {
     layer: null,
+    idleTimer: null,
+    lastMouseTime: 0,
     init() {
       this.layer = document.getElementById('vfx-layer');
       if (!this.layer) return;
       
-      // Spawn falling sakura petals slowly
-      setInterval(() => this.spawnPetal(), 1000);
+      // Expanded Ambient Objects
+      setInterval(() => this.spawnAmbientObject(), 1200);
 
-      // Global click sparkle bursts
+      // Peekaboo Kitty Element
+      const peekaboo = document.createElement('div');
+      peekaboo.id = 'peekaboo-kitty';
+      this.layer.appendChild(peekaboo);
+
+      // Global click sparkles
       document.addEventListener('click', (e) => {
-        // Prevent blocking input focus
-        if (e.target.tagName !== 'INPUT') {
+        if (e.target.tagName !== 'INPUT' && !e.target.closest('button')) {
           this.spawnClickBurst(e.clientX, e.clientY);
         }
       });
+
+      // Cursor Trail
+      document.addEventListener('mousemove', (e) => {
+        this.resetIdle();
+        if (Date.now() - this.lastMouseTime > 40) {
+          this.lastMouseTime = Date.now();
+          this.spawnTrail(e.clientX, e.clientY);
+        }
+      });
+      document.addEventListener('keydown', () => this.resetIdle());
+      this.resetIdle();
     },
-    spawnPetal() {
+    resetIdle() {
+      clearTimeout(this.idleTimer);
+      const peek = document.getElementById('peekaboo-kitty');
+      if (peek) peek.classList.remove('show');
+      this.idleTimer = setTimeout(() => {
+        if (peek) peek.classList.add('show');
+      }, 10000); // 10 seconds of idle time
+    },
+    spawnAmbientObject() {
       if (!this.layer || document.hidden) return;
-      const petal = document.createElement('div');
-      petal.className = 'hk-petal';
-      petal.style.left = Math.random() * 100 + 'vw';
-      const duration = 6 + Math.random() * 4;
-      petal.style.animationDuration = duration + 's';
-      this.layer.appendChild(petal);
-      setTimeout(() => petal.remove(), duration * 1000);
+      const types = ['petal', 'apple', 'milk', 'button'];
+      const type = types[Math.floor(Math.random() * types.length)];
+      const obj = document.createElement('div');
+      obj.className = `hk-ambient hk-ambient-${type}`;
+      obj.style.left = Math.random() * 100 + 'vw';
+      const duration = 6 + Math.random() * 5;
+      obj.style.animationDuration = duration + 's';
+      this.layer.appendChild(obj);
+      setTimeout(() => obj.remove(), duration * 1000);
+    },
+    spawnTrail(x, y) {
+      if (!this.layer) return;
+      const trail = document.createElement('div');
+      trail.className = 'hk-trail-star';
+      trail.style.left = (x + 10) + 'px';
+      trail.style.top = (y + 10) + 'px';
+      this.layer.appendChild(trail);
+      setTimeout(() => trail.remove(), 600);
     },
     spawnClickBurst(x, y) {
       if (!this.layer) return;
@@ -137,14 +162,45 @@
         sparkle.className = 'hk-particle hk-sparkle';
         sparkle.style.left = x + 'px';
         sparkle.style.top = y + 'px';
-        
         const angle = Math.random() * Math.PI * 2;
         const dist = 15 + Math.random() * 25;
         sparkle.style.setProperty('--tx', Math.cos(angle) * dist + 'px');
         sparkle.style.setProperty('--ty', Math.sin(angle) * dist + 'px');
-        
         this.layer.appendChild(sparkle);
         setTimeout(() => sparkle.remove(), 600);
+      }
+    },
+    spawnHearts(target) {
+      if (!this.layer) return;
+      const rect = target.getBoundingClientRect();
+      for (let i = 0; i < 6; i++) {
+        const heart = document.createElement('div');
+        heart.className = 'hk-heart-float';
+        heart.style.left = (rect.left + rect.width / 2) + 'px';
+        heart.style.top = (rect.top) + 'px';
+        heart.style.animationDelay = (i * 0.1) + 's';
+        heart.style.setProperty('--tx', (Math.random() * 40 - 20) + 'px');
+        this.layer.appendChild(heart);
+        setTimeout(() => heart.remove(), 1500 + (i * 100));
+      }
+    },
+    spawnSendCannon(target) {
+      if (!this.layer) return;
+      const rect = target.getBoundingClientRect();
+      const x = rect.left + rect.width / 2;
+      const y = rect.top;
+      for (let i = 0; i < 10; i++) {
+        const particle = document.createElement('div');
+        particle.className = 'hk-particle hk-cannon-star';
+        particle.style.left = x + 'px';
+        particle.style.top = y + 'px';
+        const angle = (Math.random() * Math.PI) / 1.5 + Math.PI / 6; // shoot upwards
+        const dist = 40 + Math.random() * 80;
+        particle.style.setProperty('--tx', Math.cos(angle) * dist + 'px');
+        particle.style.setProperty('--ty', -Math.sin(angle) * dist + 'px');
+        particle.style.setProperty('--rot', Math.random() * 360 + 'deg');
+        this.layer.appendChild(particle);
+        setTimeout(() => particle.remove(), 800);
       }
     },
     spawnConfetti(target) {
@@ -153,33 +209,46 @@
       const x = rect.left + rect.width / 2;
       const y = rect.top + rect.height / 2;
       const colors = ['#ff0033', '#ff6680', '#ffcc00', '#ffffff'];
-      
       for (let i = 0; i < 15; i++) {
         const conf = document.createElement('div');
         conf.className = 'hk-particle hk-confetti';
         conf.style.left = x + 'px';
         conf.style.top = y + 'px';
         conf.style.backgroundColor = colors[Math.floor(Math.random() * colors.length)];
-        
         const angle = Math.random() * Math.PI * 2;
         const dist = 30 + Math.random() * 60;
         conf.style.setProperty('--tx', Math.cos(angle) * dist + 'px');
         conf.style.setProperty('--ty', Math.sin(angle) * dist - 30 + 'px');
         conf.style.setProperty('--rot', Math.random() * 360 + 'deg');
-        
         this.layer.appendChild(conf);
         setTimeout(() => conf.remove(), 800);
+      }
+    },
+    spawnAppleRain() {
+      if (!this.layer) return;
+      for (let i = 0; i < 60; i++) {
+        setTimeout(() => {
+          const apple = document.createElement('div');
+          apple.className = 'hk-ambient hk-ambient-apple';
+          apple.style.left = Math.random() * 100 + 'vw';
+          apple.style.width = '35px';
+          apple.style.height = '35px';
+          apple.style.animationDuration = (2 + Math.random() * 2) + 's';
+          apple.style.opacity = '1';
+          this.layer.appendChild(apple);
+          setTimeout(() => apple.remove(), 4000);
+        }, i * 40);
       }
     }
   };
 
   // === Initialize App ===
   function init() {
-    addBotMessage(getGreeting(), null, false);
+    addBotMessage(getGreeting(), null, false, 'success');
     chatForm.addEventListener('submit', handleSubmit);
     quickQuestions.addEventListener('click', handleQuickQuestion);
 
-    // Audio context requires user interaction to unlock
+    // Audio context requires user interaction
     const ensureAudio = () => {
       if (!audioInitialized) {
         AudioEngine.init();
@@ -191,10 +260,18 @@
     document.addEventListener('click', ensureAudio);
     document.addEventListener('keydown', ensureAudio);
 
+    // Interactive Avatars (Pet the Kitty)
+    const headerAvatar = document.querySelector('.header-avatar');
+    if (headerAvatar) {
+      headerAvatar.addEventListener('click', (e) => {
+        AudioEngine.meow();
+        VFX.spawnHearts(e.target);
+      });
+    }
+
     // Buttons
     const soundBtn = document.getElementById('soundBtn');
     if (soundBtn) soundBtn.addEventListener('click', toggleSound);
-    
     const demoBtn = document.getElementById('demoBtn');
     if (demoBtn) demoBtn.addEventListener('click', toggleDemo);
 
@@ -203,11 +280,11 @@
   }
 
   function getGreeting() {
-    return "Hiii! 🎀✨ I'm **DeskKitty**, your super cute onboarding assistant! " +
+    return "<span class=\"sparkle-text\">Hiii! 🎀✨</span> I'm **DeskKitty**, your super cute onboarding assistant! " +
       "I'm here to help you feel right at home~ 💕\n\n" +
       "I know all about Wi-Fi, leave policies, expenses, IT support, " +
       "and everything in your employee handbook!\n\n" +
-      "Ask me anything or tap a quick question below! Let's make your first day amazing~ 🌸✨";
+      "Ask me anything or tap a quick question below! <span class=\"sparkle-text\">Let's make your first day amazing~ 🌸✨</span>";
   }
 
   function toggleSound(e) {
@@ -232,6 +309,25 @@
     const text = messageInput.value.trim();
     if (!text) return;
     messageInput.value = '';
+
+    // Easter Eggs Check
+    const lower = text.toLowerCase();
+    if (lower === 'apple' || lower === 'apples') {
+      AudioEngine.chime();
+      VFX.spawnAppleRain();
+      return;
+    }
+    if (lower === 'kuromi') {
+      AudioEngine.sad();
+      document.body.classList.add('kuromi-mode');
+      addBotMessage("<span class=\"sparkle-text\">Hehe... Kuromi was here! 🖤💀</span> Everything is dark now!", null, false, 'kuromi');
+      setTimeout(() => document.body.classList.remove('kuromi-mode'), 12000);
+      return;
+    }
+
+    const sendBtn = chatForm.querySelector('.send-btn');
+    if (sendBtn) VFX.spawnSendCannon(sendBtn);
+
     sendMessage(text);
   }
 
@@ -253,7 +349,7 @@
     setTimeout(() => {
       removeTypingIndicator();
       const response = findAnswer(text);
-      addBotMessage(response.answer, response.source, true);
+      addBotMessage(response.answer, response.source, true, response.type);
     }, delay);
   }
 
@@ -280,12 +376,13 @@
     if (bestScore >= 2) {
       lastMatchedCategory = bestMatch.category;
       contextDecay = 0;
-      return { answer: bestMatch.answer, source: bestMatch.source };
+      return { answer: bestMatch.answer, source: bestMatch.source, type: 'success' };
     }
 
     contextDecay++;
     if (contextDecay >= 3) lastMatchedCategory = null;
-    return getGracefulFallback(normalizedQuery);
+    const fallback = getGracefulFallback(normalizedQuery);
+    return { answer: fallback.answer, source: fallback.source, type: 'fallback' };
   }
 
   function expandSynonyms(query) {
@@ -345,7 +442,7 @@
 
     const esc = KNOWLEDGE_BASE.escalation["General"];
     return {
-      answer: `Hmm, I don't have a specific answer for that one. 🤔\n\n` +
+      answer: `Hmm, I don't have a specific answer for that one... 💧\n\n` +
         `Here's what I'd suggest:\n` +
         `• **Ask your buddy** – they know the ropes\n` +
         `• **Contact HR** – ${esc.email} (ext. ${esc.ext})\n` +
@@ -371,13 +468,14 @@
     scrollToBottom();
   }
 
-  function addBotMessage(text, source, showFeedback) {
+  function addBotMessage(text, source, showFeedback, type = 'normal') {
     messageCount++;
-    if (showFeedback) setTimeout(() => AudioEngine.bell(), 150); // Play sound as it appears
+    if (showFeedback) setTimeout(() => AudioEngine.bell(), 150);
 
     const msgId = 'msg-' + messageCount;
     const msgEl = document.createElement('div');
-    msgEl.className = 'message message--bot';
+    // Inject the expressive avatar class
+    msgEl.className = `message message--bot avatar-${type}`;
     msgEl.setAttribute('role', 'article');
     msgEl.setAttribute('aria-label', BOT_NAME + ' said');
 
@@ -408,7 +506,6 @@
         btn.addEventListener('click', handleFeedback);
       });
       
-      // Inject magical pop-in sparkles inside the bubble
       const sparkles = document.createElement('div');
       sparkles.className = 'bot-sparkle-container';
       sparkles.innerHTML = `
@@ -526,13 +623,13 @@
     lastMatchedCategory = null;
     contextDecay = 0;
 
-    addBotMessage("🎬 **Demo Mode** — Watch me handle common onboarding questions!", null, false);
+    addBotMessage("🎬 **Demo Mode** — Watch me handle common onboarding questions!", null, false, 'success');
     await sleep(1500);
 
     for (const script of KNOWLEDGE_BASE.demoScripts) {
       if (demoAbort) break;
 
-      addBotMessage(`--- **${script.label}** ---`, null, false);
+      addBotMessage(`--- **${script.label}** ---`, null, false, 'normal');
       await sleep(800);
       if (demoAbort) break;
 
@@ -547,13 +644,13 @@
 
       removeTypingIndicator();
       const response = findAnswer(script.question);
-      addBotMessage(response.answer, response.source, true);
+      addBotMessage(response.answer, response.source, true, response.type);
       await sleep(2500);
     }
 
     if (!demoAbort) {
       await sleep(1000);
-      addBotMessage("🎬 **Demo complete!** That's DeskKitty in action~ Try asking your own questions! 💕", null, false);
+      addBotMessage("🎬 **Demo complete!** That's DeskKitty in action~ Try asking your own questions! 💕", null, false, 'success');
     }
 
     demoRunning = false;
